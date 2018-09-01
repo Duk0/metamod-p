@@ -66,8 +66,24 @@ const game_modinfo_t * DLLINTERNAL lookup_game(const char *name) {
 	int i;
 	for(i=0; known_games[i].name; i++) {
 		imod=&known_games[i];
-		if(strcasematch(imod->name, name))
+		// If there are 2 or more same names check next dll file if doesn't exist
+		if(strcasematch(imod->name, name)) {
+			if(!strcasematch(known_games[i+1].name, name)) {
+				return(imod);
+			}
+			
+			safevoid_snprintf(check_path, sizeof(check_path), "dlls/%s",
+#ifdef _WIN32
+					 imod->win_dll);
+#elif defined(linux)
+					 imod->linux_so);
+#endif
+			if(!valid_gamedir_file(check_path)) {
+				continue;
+			}
+			
 			return(imod);
+		}
 	}
 	// no match found
 	return(NULL);
