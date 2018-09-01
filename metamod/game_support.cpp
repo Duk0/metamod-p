@@ -66,7 +66,7 @@ const game_modinfo_t * DLLINTERNAL lookup_game(const char *name) {
 	int i;
 	for(i=0; known_games[i].name; i++) {
 		imod=&known_games[i];
-		// If there are 2 or more same names check next dll file if doesn't exist
+		// If there are 2 same names (mod + steam ver.) and first gamedll file doesn't exist then check next one
 		if(strcasematch(imod->name, name)) {
 			if(!strcasematch(known_games[i+1].name, name)) {
 				return(imod);
@@ -79,6 +79,7 @@ const game_modinfo_t * DLLINTERNAL lookup_game(const char *name) {
 					 imod->linux_so);
 #endif
 			if(!valid_gamedir_file(check_path)) {
+				META_CONS("[META] INFO: Gamedll file '%s' not found. Checking next one...", check_path);
 				continue;
 			}
 			
